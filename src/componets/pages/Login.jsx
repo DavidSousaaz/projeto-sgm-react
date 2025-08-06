@@ -6,7 +6,6 @@ import { useAuth } from "../AuthContext";
 function Login() {
   const [matricula, setMatricula] = useState("");
   const [senha, setSenha] = useState("");
-  // O erro agora vem diretamente do nosso AuthContext
   const { login, authError } = useAuth();
 
   const handleLogin = async (e) => {

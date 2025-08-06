@@ -1,144 +1,87 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Button from "../form/Button";
+import Campo from "../form/Campo";
 
 export default function NovaInstituicao() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
+
+  // O estado do formulário agora reflete o DTO simples do back-end
+  const [formData, setFormData] = useState({
     nome: "",
     cnpj: "",
     email: "",
-    cursosId: [],
-    processosId: [],
   });
 
-  const [cursos, setCursos] = useState([]);
-  const [processos, setProcessos] = useState([]);
-  const [erro, setErro] = useState(null);
-
-  useEffect(() => {
-    api
-      .get("/cursos")
-      .then((res) => setCursos(res.data))
-      .catch(() => setErro("Erro ao carregar cursos."));
-    api
-      .get("/processos-seletivos")
-      .then((res) => setProcessos(res.data))
-      .catch(() => setErro("Erro ao carregar processos."));
-  }, []);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectMultiple = (e, field) => {
-    const selectedOptions = Array.from(e.target.selectedOptions).map((opt) =>
-      Number(opt.value)
-    );
-    setForm({ ...form, [field]: selectedOptions });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    api
-      .post("/instituicoes", form)
-      .then(() => navigate("/instituicoes"))
-      .catch((error) => {
-        console.error("Erro ao criar instituição:", error);
-        setErro("Erro ao salvar. Verifique os dados.");
-      });
+    setError(null); // Limpa erros anteriores
+
+    try {
+      await api.post("/instituicoes", formData);
+      // Se a criação for bem-sucedida, navega de volta para a lista
+      navigate("/instituicoes");
+    } catch (err) {
+      console.error("Erro ao criar instituição:", err);
+      const errorMsg = err.response?.data?.message || "Erro ao salvar. Verifique os dados e tente novamente.";
+      setError(errorMsg);
+    }
   };
 
   return (
-    <div className="flex justify-center mt-10">
-      <form
-        onSubmit={handleSubmit}
-        className="border p-6 rounded w-full max-w-xl shadow"
-      >
-        <h2 className="text-2xl font-bold mb-4">Nova Instituição</h2>
+      <div className="flex justify-center mt-10">
+        <form
+            onSubmit={handleSubmit}
+            className="border p-6 rounded w-full max-w-xl shadow-lg"
+        >
+          <h2 className="text-2xl font-bold mb-4">Nova Instituição</h2>
 
-        {erro && <p className="text-red-500 mb-4">{erro}</p>}
+          {error && <p className="text-red-500 mb-4 text-center bg-red-100 p-3 rounded">{error}</p>}
 
-        <div className="mb-4">
-          <label className="block mb-1">Nome</label>
-          <input
-            type="text"
-            name="nome"
-            value={form.nome}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
+          <Campo
+              label="Nome"
+              name="nome"
+              value={formData.nome}
+              onChange={handleChange}
+              required
           />
-        </div>
 
-        <div className="mb-4">
-          <label className="block mb-1">CNPJ</label>
-          <input
-            type="text"
-            name="cnpj"
-            value={form.cnpj}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
+          <Campo
+              label="CNPJ"
+              name="cnpj"
+              value={formData.cnpj}
+              onChange={handleChange}
+              required
           />
-        </div>
 
-        <div className="mb-4">
-          <label className="block mb-1">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
+          <Campo
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
           />
-        </div>
 
-        <div className="mb-4">
-          <label className="block mb-1">Cursos</label>
-          <select
-            multiple
-            className="w-full border p-2 rounded h-[120px]"
-            value={form.cursosId}
-            onChange={(e) => handleSelectMultiple(e, "cursosId")}
-          >
-            {cursos.map((curso) => (
-              <option key={curso.id} value={curso.id}>
-                {curso.nome}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-1">Processos Seletivos</label>
-          <select
-            multiple
-            className="w-full border p-2 rounded h-[120px]"
-            value={form.processosId}
-            onChange={(e) => handleSelectMultiple(e, "processosId")}
-          >
-            {processos.map((proc) => (
-              <option key={proc.id} value={proc.id}>
-                {proc.nome}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex gap-2">
-          <Button type="submit">Salvar</Button>
-          <Button
-            type="button"
-            color="gray"
-            onClick={() => navigate("/instituicoes")}
-          >
-            Cancelar
-          </Button>
-        </div>
-      </form>
-    </div>
+          <div className="flex justify-center gap-2 mt-4">
+            <Button
+                type="button"
+                color="color"
+                onClick={() => navigate("/instituicoes")}
+            >
+              Cancelar
+            </Button>
+            <Button type="submit">Salvar</Button>
+          </div>
+        </form>
+      </div>
   );
 }
