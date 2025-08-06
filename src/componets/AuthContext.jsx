@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 // 1. Importando nosso serviço de API centralizado
-import api from '../services/api';
+import api from './services/api';
 
 export const AuthContext = createContext();
 

@@ -1,27 +1,27 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import Login from "../../pages/Login";
-import Aluno from "../../pages/Aluno";
-import Professor from "../../pages/Professor";
-import Coordenador from "../../pages/Coordenador";
-import Monitor from "../../pages/Monitor";
-import Admin from "../../pages/Admin";
-import CadastroAluno from "../../pages/CadastroAluno";
-import SenhaEsquecida from "../../pages/SenhaEsquecida";
-import RotaProtegida from "./RotaProtegida";
-import Conteiner from "../layout/Conteiner"; // Renomeado para Conteiner
-import Perfil from "../../pages/Perfil";
-import Editais from "../../pages/Editais";
-import Monitorias from "../../pages/Monitorias";
-import Alunos from "../../pages/Alunos";
-import Instituicoes from "../../pages/Instituicoes";
-import NovaInstituicao from "../../pages/NovaInstituicao";
-import EditarInstituicao from "../../pages/EditarInstituicao";
-import Disciplinas from "../../pages/Disciplinas";
-import NovaDisciplina from "../../pages/NovaDisciplina";
-import EditarDisciplina from "../../pages/EditarDisciplina";
-import Coordenadores from "../../pages/Coordenadores";
-import NovoCoordenador from "../../pages/NovoCoordenador";
-import EditarCoordenador from "../../pages/EditarCoordenador";
+import Login from "../pages/Login";
+import Aluno from "../pages/Aluno";
+import Professor from "../pages/Professor";
+import Coordenador from "../pages/Coordenador";
+import Monitor from "../pages/Monitor";
+import Admin from "../pages/Admin";
+import CadastroAluno from "../pages/CadastroAluno";
+import SenhaEsquecida from "../pages/SenhaEsquecida";
+import RotaProtegida from "./RotaProtegida"; // Este já estava certo (mesma pasta)
+import Conteiner from "../layout/Conteiner";
+import Perfil from "../pages/Perfil";
+import Editais from "../pages/Editais";
+import Monitorias from "../pages/Monitorias";
+import Alunos from "../pages/Alunos";
+import Instituicoes from "../pages/Instituicoes";
+import NovaInstituicao from "../pages/NovaInstituicao";
+import EditarInstituicao from "../pages/EditarInstituicao";
+import Disciplinas from "../pages/Disciplinas";
+import NovaDisciplina from "../pages/NovaDisciplina";
+import EditarDisciplina from "../pages/EditarDisciplina";
+import Coordenadores from "../pages/Coordenadores";
+import NovoCoordenador from "../pages/NovoCoordenador";
+import EditarCoordenador from "../pages/EditarCoordenador";
 
 function AppRoutes() {
     const location = useLocation();

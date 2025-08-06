@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import FormularioLogin from "../componets/login/FormularioLogin"; // Corrigindo o caminho se necessário
-import { useAuth } from "../componets/AuthContext";
+import FormularioLogin from "../login/LoginForm.jsx"; // Corrigindo o caminho se necessário
+import { useAuth } from "../AuthContext";
 
 function Login() {
   const [matricula, setMatricula] = useState("");
