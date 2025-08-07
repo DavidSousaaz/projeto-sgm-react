@@ -28,7 +28,6 @@ function NavBar() {
       { to: "/coordenador", label: "Coordenação" },
       { to: "/alunos", label: "Alunos" },
       { to: "/disciplinas", label: "Disciplinas" },
-      { to: "/monitorias", label: "Monitorias" },
     ]
   };
 
