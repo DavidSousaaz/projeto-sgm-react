@@ -1,57 +1,71 @@
 import { Route, Routes, useLocation } from "react-router-dom";
+
+// Componentes de Layout e Rotas
+import Conteiner from "../layout/Conteiner";
+import RotaProtegida from "./RotaProtegida";
+
+// Páginas Públicas
 import Login from "../pages/Login";
-import Aluno from "../pages/Aluno";
-import Professor from "../pages/Professor";
-import Coordenador from "../pages/Coordenador";
-import Monitor from "../pages/Monitor";
-import Admin from "../pages/Admin";
 import CadastroAluno from "../pages/CadastroAluno";
 import SenhaEsquecida from "../pages/SenhaEsquecida";
-import RotaProtegida from "./RotaProtegida"; // Este já estava certo (mesma pasta)
-import Conteiner from "../layout/Conteiner";
-import Perfil from "../pages/Perfil";
-import Editais from "../pages/Editais";
-import Monitorias from "../pages/Monitorias";
+
+// Páginas Protegidas
+import Admin from "../pages/Admin";
+import Aluno from "../pages/Aluno";
 import Alunos from "../pages/Alunos";
-import Instituicoes from "../pages/Instituicoes";
-import NovaInstituicao from "../pages/NovaInstituicao";
-import EditarInstituicao from "../pages/EditarInstituicao";
-import Disciplinas from "../pages/Disciplinas";
-import NovaDisciplina from "../pages/NovaDisciplina";
-import EditarDisciplina from "../pages/EditarDisciplina";
+import Coordenador from "../pages/Coordenador";
 import Coordenadores from "../pages/Coordenadores";
 import NovoCoordenador from "../pages/NovoCoordenador";
 import EditarCoordenador from "../pages/EditarCoordenador";
+import Disciplinas from "../pages/Disciplinas";
+import NovaDisciplina from "../pages/NovaDisciplina";
+import EditarDisciplina from "../pages/EditarDisciplina";
+import Editais from "../pages/Editais";
+import EditalDetalhes from "../pages/EditalDetalhes"; // A nova página
+import Instituicoes from "../pages/Instituicoes";
+import NovaInstituicao from "../pages/NovaInstituicao";
+import EditarInstituicao from "../pages/EditarInstituicao";
+import Monitor from "../pages/Monitor";
+import Monitorias from "../pages/Monitorias";
+import MonitoriaDetalhes from "../pages/MonitoriaDetalhes";
+import Perfil from "../pages/Perfil";
+import Professor from "../pages/Professor";
+
 
 function AppRoutes() {
     const location = useLocation();
 
-    // Rotas que não devem exibir o layout principal (NavBar, etc.)
+    // Define quais rotas não devem mostrar o layout principal (cabeçalho e navbar)
     const rotasSemLayout = ["/", "/senhaEsquecida", "/cadastrarAluno"];
     const mostrarLayout = !rotasSemLayout.includes(location.pathname);
 
-    // Envolvemos as rotas protegidas em um único elemento de layout
+    // Um componente interno para agrupar todas as rotas que usam o layout principal
     const RotasComLayout = () => (
         <Conteiner>
             <Routes>
-                {/* Aluno */}
+                {/* Home Pages por Perfil */}
+                <Route path="/admin" element={<RotaProtegida perfilPermitido="admin"><Admin /></RotaProtegida>} />
+                <Route path="/coordenador" element={<RotaProtegida perfilPermitido={["coordenador", "admin"]}><Coordenador /></RotaProtegida>} />
+                <Route path="/professor" element={<RotaProtegida perfilPermitido={["professor", "coordenador", "admin"]}><Professor /></RotaProtegida>} />
+                <Route path="/monitor" element={<RotaProtegida perfilPermitido="monitor"><Monitor /></RotaProtegida>} />
+
+                {/* Fluxo do Aluno */}
                 <Route path="/aluno/:id" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno"]}><Aluno /></RotaProtegida>} />
                 <Route path="/perfil/:id" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno"]}><Perfil /></RotaProtegida>} />
-                <Route path="/editais" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno"]}><Editais /></RotaProtegida>} />
-                <Route path="/monitorias" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno"]}><Monitorias /></RotaProtegida>} />
 
-                {/* Professor */}
-                <Route path="/professor" element={<RotaProtegida perfilPermitido={["professor", "coordenador", "admin"]}><Professor /></RotaProtegida>} />
+                {/* Editais e Monitorias */}
+                <Route path="/editais" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno", "monitor"]}><Editais /></RotaProtegida>} />
+                <Route path="/editais/:id" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno", "monitor"]}><EditalDetalhes /></RotaProtegida>} />
+                <Route path="/monitorias" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno", "monitor"]}><Monitorias /></RotaProtegida>} />
+                <Route path="/monitorias/:id" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno", "monitor"]}><MonitoriaDetalhes /></RotaProtegida>} />
 
-                {/* Coordenador */}
-                <Route path="/coordenador" element={<RotaProtegida perfilPermitido={["coordenador", "admin"]}><Coordenador /></RotaProtegida>} />
+                {/* Gerenciamento (Coordenador / Admin) */}
                 <Route path="/alunos" element={<RotaProtegida perfilPermitido={["coordenador", "admin"]}><Alunos /></RotaProtegida>} />
                 <Route path="/disciplinas" element={<RotaProtegida perfilPermitido={["coordenador", "admin"]}><Disciplinas /></RotaProtegida>} />
                 <Route path="/disciplinas/novo" element={<RotaProtegida perfilPermitido={["coordenador", "admin"]}><NovaDisciplina /></RotaProtegida>} />
                 <Route path="/disciplinas/:id" element={<RotaProtegida perfilPermitido={["coordenador", "admin"]}><EditarDisciplina /></RotaProtegida>} />
 
-                {/* Admin */}
-                <Route path="/admin" element={<RotaProtegida perfilPermitido="admin"><Admin /></RotaProtegida>} />
+                {/* Gerenciamento (Admin) */}
                 <Route path="/instituicoes" element={<RotaProtegida perfilPermitido="admin"><Instituicoes /></RotaProtegida>} />
                 <Route path="/instituicoes/novo" element={<RotaProtegida perfilPermitido="admin"><NovaInstituicao /></RotaProtegida>} />
                 <Route path="/instituicoes/:id" element={<RotaProtegida perfilPermitido="admin"><EditarInstituicao /></RotaProtegida>} />
@@ -59,10 +73,7 @@ function AppRoutes() {
                 <Route path="/coordenadores/novo" element={<RotaProtegida perfilPermitido="admin"><NovoCoordenador /></RotaProtegida>} />
                 <Route path="/coordenadores/editar/:id" element={<RotaProtegida perfilPermitido="admin"><EditarCoordenador /></RotaProtegida>} />
 
-                {/* Monitor */}
-                <Route path="/monitor" element={<RotaProtegida perfilPermitido="monitor"><Monitor /></RotaProtegida>} />
-
-                {/* TODO: Adicionar uma rota de fallback para acesso negado ou página não encontrada */}
+                {/* TODO: Adicionar uma Rota "Não Encontrado" (404) aqui */}
             </Routes>
         </Conteiner>
     );
@@ -71,11 +82,11 @@ function AppRoutes() {
         <Routes>
             {/* Rotas Públicas */}
             <Route path="/" element={<Login />} />
-            <Route path="/senhaEsquecida" element={<SenhaEsquecida />} />
             <Route path="/cadastrarAluno" element={<CadastroAluno />} />
+            <Route path="/senhaEsquecida" element={<SenhaEsquecida />} />
 
-            {/* Rotas Privadas que usam o layout */}
-            {mostrarLayout && <Route path="/*" element={<RotasComLayout />} />}
+            {/* O "/*" faz com que qualquer outra rota caia aqui para ser gerenciada pelo componente aninhado */}
+            <Route path="/*" element={mostrarLayout ? <RotasComLayout /> : null} />
         </Routes>
     );
 }
