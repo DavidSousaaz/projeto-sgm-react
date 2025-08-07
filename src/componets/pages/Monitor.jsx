@@ -4,7 +4,7 @@ import Button from "../form/Button";
 import { useAuth } from "../AuthContext";
 
 export default function Monitor() {
-    const { isMonitor } = useAuth(); // Pega o estado 'isMonitor'
+    const { isMonitor } = useAuth();
 
     const [minhaMonitoria, setMinhaMonitoria] = useState(null);
     const [atividades, setAtividades] = useState([]);
@@ -14,18 +14,14 @@ export default function Monitor() {
 
     const carregarDados = () => {
         setLoading(true);
-        // Busca as inscrições do aluno logado
         api.get("/alunos/me/inscricoes")
             .then(response => {
-                // Encontra a inscrição em que o aluno foi selecionado
                 const inscricaoAtiva = response.data.find(insc => insc.selecionado);
                 if (inscricaoAtiva) {
                     const monitoria = inscricaoAtiva.monitoriaResponseDTO;
                     setMinhaMonitoria(monitoria);
-                    // Com o ID da monitoria, busca as atividades registradas
                     return api.get(`/atividades?monitoriaId=${monitoria.id}`);
                 }
-                // Se não encontrar, ele não é um monitor ativo
                 throw new Error("Nenhuma monitoria ativa encontrada para você.");
             })
             .then(atividadesResponse => {
@@ -39,7 +35,6 @@ export default function Monitor() {
     };
 
     useEffect(() => {
-        // Só busca os dados se o AuthContext confirmar que o usuário é um monitor
         if (isMonitor) {
             carregarDados();
         } else {
@@ -55,20 +50,32 @@ export default function Monitor() {
             await api.post('/atividades', {
                 descricao: novaAtividade,
                 monitoriaId: minhaMonitoria.id,
-                // A data/hora pode ser gerada pelo back-end, então não precisamos enviar
             });
             alert('Atividade registrada com sucesso!');
-            setNovaAtividade(''); // Limpa o campo do formulário
-            carregarDados(); // Recarrega a lista de atividades para mostrar a nova
+            setNovaAtividade('');
+            carregarDados();
         } catch (err) {
             console.error("Erro ao registrar atividade:", err);
             alert("Falha ao registrar atividade.");
         }
     };
 
+    // Função auxiliar para criar um "badge" de status colorido
+    const renderStatusBadge = (status) => {
+        const styleMap = {
+            PENDENTE: 'bg-yellow-100 text-yellow-800',
+            APROVADA: 'bg-green-100 text-green-800',
+            REPROVADA: 'bg-red-100 text-red-800',
+        };
+        return (
+            <span className={`px-3 py-1 text-sm font-medium rounded-full ${styleMap[status] || 'bg-gray-100 text-gray-800'}`}>
+                {status}
+            </span>
+        );
+    };
+
     if (loading) return <p className="text-center mt-8">Verificando seu status de monitor...</p>;
 
-    // Se, após a verificação, o usuário não for monitor, exibe a mensagem
     if (!isMonitor) {
         return (
             <div className="p-6 max-w-4xl mx-auto text-center">
@@ -112,11 +119,15 @@ export default function Monitor() {
                 {atividades.length > 0 ? (
                     <ul className="divide-y bg-white p-4 rounded-lg shadow-md border">
                         {atividades.map(ativ => (
-                            <li key={ativ.id} className="py-3">
-                                <p className="text-gray-800">{ativ.descricao}</p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Registrado em: {new Date(ativ.dataHora).toLocaleString('pt-BR')}
-                                </p>
+                            <li key={ativ.id} className="py-3 flex justify-between items-center">
+                                <div>
+                                    <p className="text-gray-800">{ativ.descricao}</p>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Registrado em: {new Date(ativ.dataHora).toLocaleString('pt-BR')}
+                                    </p>
+                                </div>
+                                {/* ** A MUDANÇA É AQUI: Exibindo o status ** */}
+                                {renderStatusBadge(ativ.status)}
                             </li>
                         ))}
                     </ul>
