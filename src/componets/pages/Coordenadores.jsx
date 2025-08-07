@@ -1,67 +1,78 @@
-import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import * as coordenadorService from "../services/coordenadorService";
-import Button from "../../componets/form/Button.jsx";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+import Button from "../form/Button";
 
 export default function Coordenadores() {
     const navigate = useNavigate();
     const [coordenadores, setCoordenadores] = useState([]);
-    const [erro, setErro] = useState(null);
-    const [carregando, setCarregando] = useState(true);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         carregarCoordenadores();
     }, []);
 
     function carregarCoordenadores() {
-        setCarregando(true);
-        coordenadorService.getCoordenadores()
+        setLoading(true);
+        // 1. Busca todos os professores
+        api.get("/professores")
             .then((response) => {
-                setCoordenadores(response.data);
+                // 2. Filtra apenas os que têm cursos associados (coordenadores)
+                const
+
+                    professoresCoordenadores = response.data.filter(
+                        (prof) => prof.cursosResponseDTO && prof.cursosResponseDTO.length > 0
+                    );
+                setCoordenadores(professoresCoordenadores);
             })
-            .catch((error) => {
-                console.error("Erro ao buscar coordenadores:", error);
-                setErro("Erro ao carregar a lista de coordenadores.");
+            .catch((err) => {
+                console.error("Erro ao buscar coordenadores:", err);
+                setError("Erro ao carregar a lista de coordenadores.");
             })
             .finally(() => {
-                setCarregando(false);
+                setLoading(false);
             });
     }
 
-    function deletar(id) {
-        if (window.confirm("Tem certeza que deseja remover o cargo deste coordenador? Ele voltará a ser apenas um professor.")) {
-            coordenadorService.deleteCoordenador(id)
+    function removerCargo(professor) {
+        if (window.confirm(`Tem certeza que deseja remover o cargo de coordenador do(a) professor(a) ${professor.nome}?`)) {
+            // 3. Para remover o cargo, atualizamos o professor com uma lista de cursos vazia
+            const dadosAtualizados = { cursosId: [] };
+
+            api.put(`/professores/${professor.id}`, dadosAtualizados)
                 .then(() => {
-                    setCoordenadores(coordenadores.filter((c) => c.id !== id));
+                    // Atualiza a lista na tela sem precisar recarregar
+                    carregarCoordenadores();
                 })
-                .catch((error) => {
-                    console.error("Erro ao remover cargo de coordenador:", error);
+                .catch((err) => {
+                    console.error("Erro ao remover cargo de coordenador:", err);
                     alert("Erro ao remover o cargo do coordenador.");
                 });
         }
     }
 
-    if (carregando) return <p className="text-center mt-4">Carregando...</p>;
-    if (erro) return <p className="text-red-500 text-center mt-4">{erro}</p>;
+    if (loading) return <p className="text-center mt-8">Carregando...</p>;
+    if (error) return <p className="text-red-500 text-center mt-8">{error}</p>;
 
     return (
         <div className="p-6 max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Gerenciar Coordenadores</h1>
                 <Button onClick={() => navigate("/coordenadores/novo")}>
-                    Novo Coordenador
+                    Adicionar Coordenador
                 </Button>
             </div>
 
             {coordenadores.length === 0 ? (
-                <p>Nenhum coordenador cadastrado.</p>
+                <p>Nenhum professor atuando como coordenador.</p>
             ) : (
                 <table className="min-w-full border border-gray-300 rounded">
                     <thead className="bg-gray-100">
                     <tr>
                         <th className="p-3 border-b border-gray-300 text-left">Nome</th>
                         <th className="p-3 border-b border-gray-300 text-left">Email</th>
-                        <th className="p-3 border-b border-gray-300 text-left">Curso Coordenado</th>
+                        <th className="p-3 border-b border-gray-300 text-left">Cursos Coordenados</th>
                         <th className="p-3 border-b border-gray-300 text-center">Ações</th>
                     </tr>
                     </thead>
@@ -70,9 +81,10 @@ export default function Coordenadores() {
                         <tr key={coord.id} className="hover:bg-gray-50">
                             <td className="p-3 border-b border-gray-300">{coord.nome}</td>
                             <td className="p-3 border-b border-gray-300">{coord.email}</td>
-                            <td className="p-3 border-b border-gray-300">{coord.cursoResponseDTO.nome}</td>
+                            <td className="p-3 border-b border-gray-300">
+                                {coord.cursosResponseDTO.map(c => c.nome).join(', ')}
+                            </td>
                             <td className="p-3 border-b border-gray-300 text-center space-x-2">
-                                {/* BOTÃO ADICIONADO */}
                                 <Button
                                     onClick={() => navigate(`/coordenadores/editar/${coord.id}`)}
                                     color="color"
@@ -80,10 +92,10 @@ export default function Coordenadores() {
                                     Editar
                                 </Button>
                                 <Button
-                                    onClick={() => deletar(coord.id)}
+                                    onClick={() => removerCargo(coord)}
                                     color="red"
                                 >
-                                    Excluir
+                                    Remover Cargo
                                 </Button>
                             </td>
                         </tr>
