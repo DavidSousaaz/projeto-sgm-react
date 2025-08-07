@@ -1,131 +1,103 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import api from "../services/api";
 import Campo from "../form/Campo";
-import ButtonSubmit from "../form/Button";
+import { useAuth } from "../AuthContext";
 
 export default function Perfil() {
   const { id } = useParams();
-  const [perfil, setPerfil] = useState(null);
-  const [form, setForm] = useState({});
-  const [editando, setEditando] = useState(false);
+  const { profile } = useAuth();
+
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    api
-      .get(`/alunos/${id}`)
-      .then((res) => {
-        setPerfil(res.data);
-        setForm(res.data);
-      })
-      .catch((err) => {
-        console.error("Erro ao carregar perfil:", err);
-      });
-  }, [id]);
+    const endpoint = profile === 'aluno' ? `/alunos/${id}` : `/professores/${id}`;
 
-  const salvar = () => {
-    api
-      .put(`/alunos/${id}`, form)
-      .then((res) => {
-        setPerfil(res.data);
-        setEditando(false);
-      })
-      .catch((err) => {
-        console.error("Erro ao salvar perfil:", err);
-      });
-  };
+    api.get(endpoint)
+        .then(response => {
+          setUserData(response.data);
+        })
+        .catch(err => {
+          console.error("Erro ao carregar dados do perfil:", err);
+          setError("Não foi possível carregar os dados do perfil.");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+  }, [id, profile]);
 
-  if (!perfil) return <div className="text-center mt-10">Carregando...</div>;
+  if (loading) return <p className="text-center mt-10 text-lg">Carregando perfil...</p>;
+  if (error) return <p className="text-red-500 text-center mt-10 text-lg">{error}</p>;
+  if (!userData) return <p className="text-center mt-10 text-lg">Usuário não encontrado.</p>;
 
   return (
-    <>
-      <div className="max-w-[500px] w-[74vw] min-w-[330px] mx-auto mt-10 mb-10 p-6 rounded-2xl shadow-2xl border-2 border-primaria">
-        <h2 className="text-2xl font-semibold mb-4">Perfil do Aluno</h2>
+      <div className="flex justify-center p-4">
+        <div className="max-w-2xl w-full mx-auto mt-10 mb-10 p-6 rounded-2xl shadow-2xl border-2 border-primaria">
+          <h2 className="text-2xl font-semibold mb-6 text-center">Meu Perfil</h2>
 
-        <div>
-          <Campo
-            label="Nome"
-            name="nome"
-            value={form.nome ?? ""}
-            onChange={handleChange}
-            disabled={!editando}
-          />
-          <Campo
-            label="CPF"
-            name="cpf"
-            value={form.cpf ?? ""}
-            onChange={handleChange}
-            disabled={true}
-          />
+          <form>
+            {/* CORREÇÃO: Removidas as classes de grid daqui para alinhar em uma coluna */}
+            <div>
+              <Campo
+                  label="Nome Completo"
+                  name="nome"
+                  value={userData.nome || ''}
+                  disabled={true}
+              />
+              <Campo
+                  label="CPF"
+                  name="cpf"
+                  value={userData.cpf || ''}
+                  disabled={true}
+              />
+              <Campo
+                  label="Matrícula"
+                  name="matricula"
+                  value={userData.matricula || ''}
+                  disabled={true}
+              />
+              <Campo
+                  label="Email Pessoal"
+                  name="email"
+                  value={userData.email || ''}
+                  disabled={true}
+              />
+              <Campo
+                  label="Email Acadêmico"
+                  name="emailAcademico"
+                  value={userData.emailAcademico || ''}
+                  disabled={true}
+              />
+              <Campo
+                  label="Instituição"
+                  name="instituicao"
+                  value={userData.instituicaoResponseDTO?.nome || ''}
+                  disabled={true}
+              />
+            </div>
 
-          <Campo
-            label="Matrícula"
-            name="matricula"
-            value={form.matricula ?? ""}
-            onChange={handleChange}
-            disabled={true}
-          />
-          <Campo
-            label="Email"
-            name="email"
-            value={form.email ?? ""}
-            onChange={handleChange}
-            disabled={!editando}
-          />
-          <Campo
-            label="Email-Academico"
-            name="emailAcademico"
-            value={form?.emailAcademico ?? ""}
-            onChange={handleChange}
-            disabled={!editando}
-          />
-          <Campo
-            label="Instituição"
-            name="instituicao"
-            value={form.instituicaoResponseDTO.id ?? ""}
-            onChange={handleChange}
-            disabled={!editando}
-          />
-          {/*<Campo
-                        label="Curso"
-                        name="curso"
-                        value={form.curso ?? ""}
-                        onChange={handleChange}
-                        disabled={!editando}
-                    />*/}
-        </div>
+            {profile === 'aluno' && userData.disciplinasPagasResponseDTO && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold border-t pt-4">Disciplinas Concluídas</h3>
+                  {userData.disciplinasPagasResponseDTO.length > 0 ? (
+                      <ul className="list-disc list-inside mt-2 text-gray-700">
+                        {userData.disciplinasPagasResponseDTO.map(d => <li key={d.id}>{d.nome}</li>)}
+                      </ul>
+                  ) : (
+                      <p className="text-gray-500 mt-2">Nenhuma disciplina concluída registrada.</p>
+                  )}
+                </div>
+            )}
+          </form>
 
-        <div className="mt-6 flex justify-end gap-4">
-          {editando ? (
-            <>
-              <ButtonSubmit
-                type="button"
-                color="color"
-                onClick={() => {
-                  setForm(perfil); // reseta mudanças
-                  setEditando(false);
-                }}
-                className="bg-gray-300 text-black px-4 py-2 rounded-lg"
-              >
-                Cancelar
-              </ButtonSubmit>
-              <ButtonSubmit
-                onClick={salvar}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-              >
-                Salvar
-              </ButtonSubmit>
-            </>
-          ) : (
-            <ButtonSubmit
-              type="button"
-              onClick={() => setEditando(true)}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg"
-            >
-              Editar
-            </ButtonSubmit>
-          )}
+          <div className="mt-6 text-center">
+            <Link to={-1} className="text-secundaria hover:underline">
+              Voltar
+            </Link>
+          </div>
         </div>
       </div>
-    </>
   );
 }
