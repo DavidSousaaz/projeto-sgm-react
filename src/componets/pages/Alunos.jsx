@@ -8,7 +8,7 @@ export default function Alunos() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        api.get('/alunos') // Chamando o endpoint real
+        api.get('/alunos')
             .then((response) => {
                 setAlunos(response.data);
             })

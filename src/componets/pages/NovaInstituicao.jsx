@@ -7,7 +7,7 @@ import Campo from "../form/Campo";
 export default function NovaInstituicao() {
   const navigate = useNavigate();
 
-  // O estado do formulário agora reflete o DTO simples do back-end
+
   const [formData, setFormData] = useState({
     nome: "",
     cnpj: "",
@@ -23,11 +23,11 @@ export default function NovaInstituicao() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Limpa erros anteriores
+    setError(null);
 
     try {
       await api.post("/instituicoes", formData);
-      // Se a criação for bem-sucedida, navega de volta para a lista
+
       navigate("/instituicoes");
     } catch (err) {
       console.error("Erro ao criar instituição:", err);

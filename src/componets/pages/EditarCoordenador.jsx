@@ -24,7 +24,7 @@ export default function EditarCoordenador() {
                 setFormData({
                     nome: prof.nome || "",
                     email: prof.email || "",
-                    // Assume que um coordenador edita a coordenação de um curso por vez
+
                     cursoId: prof.cursosResponseDTO[0]?.id || ""
                 });
                 setCursos(cursosResponse.data);

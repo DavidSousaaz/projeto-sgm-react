@@ -9,7 +9,7 @@ export default function Professor() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Busca as monitorias do professor logado
+
   useEffect(() => {
     setLoading(true);
     api.get('/professores/me/monitorias')
@@ -21,7 +21,7 @@ export default function Professor() {
         .finally(() => setLoading(false));
   }, []);
 
-  // Busca as atividades quando uma monitoria é selecionada
+
   useEffect(() => {
     if (selectedMonitoriaId) {
       api.get(`/atividades?monitoriaId=${selectedMonitoriaId}`)
@@ -37,7 +37,7 @@ export default function Professor() {
     if (window.confirm(`Tem certeza que deseja marcar esta atividade como ${newStatus}?`)) {
       api.patch(`/atividades/${atividadeId}/status`, { status: newStatus })
           .then(() => {
-            // Atualiza a lista de atividades na tela
+
             setAtividades(prev => prev.map(ativ =>
                 ativ.id === atividadeId ? { ...ativ, status: newStatus } : ativ
             ));
@@ -56,7 +56,7 @@ export default function Professor() {
       <div className="p-6 max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Painel do Professor</h1>
 
-        {/* Seletor de Monitorias */}
+        {}
         <div className="mb-6">
           <label className="block text-lg font-medium mb-2">Selecione uma de suas monitorias:</label>
           <select
@@ -71,7 +71,7 @@ export default function Professor() {
           </select>
         </div>
 
-        {/* Tabela de Atividades */}
+        {}
         {selectedMonitoriaId && (
             <div>
               <h2 className="text-2xl font-bold mb-4">Atividades Registradas pelo Monitor</h2>

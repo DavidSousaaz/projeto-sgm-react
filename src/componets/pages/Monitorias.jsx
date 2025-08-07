@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
-// 1. Importando nosso novo card específico para inscrições
+
 import InscricaoCard from "../monitoria/InscricaoCard";
 
 export default function Monitorias() {
@@ -32,7 +32,7 @@ export default function Monitorias() {
             </h1>
             <div className="flex flex-col pb-[10px]">
                 {inscricoes.length > 0 ? (
-                    // 2. Usando o InscricaoCard em vez do MonitorCard
+
                     inscricoes.map((inscricao) => (
                         <InscricaoCard key={inscricao.id.monitoriaId} inscricao={inscricao} />
                     ))

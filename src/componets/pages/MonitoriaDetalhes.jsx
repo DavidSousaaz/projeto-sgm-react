@@ -11,7 +11,7 @@ export default function MonitoriaDetalhes() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Função para buscar os dados, para que possamos reutilizá-la
+
     const fetchMonitoria = () => {
         setLoading(true);
         api.get(`/monitorias/${id}`)
@@ -27,18 +27,18 @@ export default function MonitoriaDetalhes() {
             });
     };
 
-    // Busca os dados quando o componente é montado
+
     useEffect(() => {
         fetchMonitoria();
     }, [id]);
 
-    // 1. NOVA FUNÇÃO para chamar a API de seleção de monitor
+
     const handleSelecionarMonitor = (alunoId) => {
         if (window.confirm("Tem certeza que deseja selecionar este aluno como monitor?")) {
             api.put(`/monitorias/${id}/inscricoes/${alunoId}/selecionar`)
                 .then(() => {
                     alert("Aluno selecionado com sucesso!");
-                    // Recarrega os dados da monitoria para atualizar o status na tela
+
                     fetchMonitoria();
                 })
                 .catch(err => {
@@ -55,7 +55,7 @@ export default function MonitoriaDetalhes() {
     if (!monitoria) return <p className="text-center mt-8 text-lg">Monitoria não encontrada.</p>;
 
     const podeVerInscritos = profile === 'admin' || profile === 'coordenador' || profile === 'professor';
-    // 2. NOVA VARIÁVEL para controlar quem pode clicar no botão
+
     const podeSelecionar = profile === 'admin' || profile === 'coordenador';
 
     return (
@@ -94,7 +94,7 @@ export default function MonitoriaDetalhes() {
                                             {inscricao.selecionado ? 'Selecionado' : 'Pendente'}
                                         </span>
 
-                                        {/* 3. BOTÃO DE SELEÇÃO com lógica de permissão e visibilidade */}
+                                        {}
                                         {podeSelecionar && !inscricao.selecionado && (
                                             <Button onClick={() => handleSelecionarMonitor(inscricao.alunoResponseDTO.id)}>
                                                 Selecionar

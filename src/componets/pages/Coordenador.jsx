@@ -10,7 +10,7 @@ export default function Coordenador() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Busca os dados do nosso novo endpoint de dashboard
+
         api.get("/monitorias/dashboard")
             .then(response => {
                 setDashboardData(response.data);
@@ -58,7 +58,7 @@ export default function Coordenador() {
                                     {monitoria.vagasOcupadas} / {monitoria.vagasTotais}
                                 </td>
                                 <td className="p-3 border-b border-gray-300 text-center">
-                                    {/* O botão agora leva para a página de detalhes da monitoria */}
+                                    {}
                                     <Button
                                         onClick={() => navigate(`/monitorias/${monitoria.id}`)}
                                         color="color"

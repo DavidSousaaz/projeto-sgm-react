@@ -38,7 +38,7 @@ export default function Perfil() {
           <h2 className="text-2xl font-semibold mb-6 text-center">Meu Perfil</h2>
 
           <form>
-            {/* CORREÇÃO: Removidas as classes de grid daqui para alinhar em uma coluna */}
+            {}
             <div>
               <Campo
                   label="Nome Completo"

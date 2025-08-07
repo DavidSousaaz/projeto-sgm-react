@@ -31,19 +31,19 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [isMonitor, setIsMonitor] = useState(false); // Novo estado
+  const [isMonitor, setIsMonitor] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // Nova função para verificar se o aluno é um monitor ativo
+
   const verificarStatusMonitor = async () => {
     try {
       const inscricoesResponse = await api.get(`/alunos/me/inscricoes`);
       const inscricaoAtiva = inscricoesResponse.data.find(insc => insc.selecionado);
-      setIsMonitor(!!inscricaoAtiva); // Converte para booleano (true se encontrou, false se não)
+      setIsMonitor(!!inscricaoAtiva);
     } catch (error) {
       console.error("Não foi possível verificar o status de monitor.", error);
-      setIsMonitor(false); // Garante que o padrão é 'false' em caso de erro
+      setIsMonitor(false);
     }
   };
 
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
             const userProfile = mapRoleToProfile(parsedUser.roles);
             setProfile(userProfile);
 
-            // Se o usuário carregado for um aluno, verifica seu status de monitor
+
             if (userProfile === 'aluno') {
               await verificarStatusMonitor();
             }
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }) => {
       const userProfile = mapRoleToProfile(userData.roles);
       setProfile(userProfile);
 
-      // Após o login, se for aluno, verifica o status de monitor
+
       if (userProfile === 'aluno') {
         await verificarStatusMonitor();
       }
@@ -125,7 +125,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     setProfile(null);
-    setIsMonitor(false); // Limpa o status de monitor no logout
+    setIsMonitor(false);
     navigate("/");
   };
 
@@ -133,7 +133,7 @@ export const AuthProvider = ({ children }) => {
     token,
     user,
     profile,
-    isMonitor, // Expondo o novo estado para a aplicação
+    isMonitor,
     isAuthenticated: !!token,
     loading,
     authError,

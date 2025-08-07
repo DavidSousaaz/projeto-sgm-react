@@ -15,10 +15,10 @@ export default function Coordenadores() {
 
     function carregarCoordenadores() {
         setLoading(true);
-        // 1. Busca todos os professores
+
         api.get("/professores")
             .then((response) => {
-                // 2. Filtra apenas os que têm cursos associados (coordenadores)
+
                 const
 
                     professoresCoordenadores = response.data.filter(
@@ -37,12 +37,12 @@ export default function Coordenadores() {
 
     function removerCargo(professor) {
         if (window.confirm(`Tem certeza que deseja remover o cargo de coordenador do(a) professor(a) ${professor.nome}?`)) {
-            // 3. Para remover o cargo, atualizamos o professor com uma lista de cursos vazia
+
             const dadosAtualizados = { cursosId: [] };
 
             api.put(`/professores/${professor.id}`, dadosAtualizados)
                 .then(() => {
-                    // Atualiza a lista na tela sem precisar recarregar
+
                     carregarCoordenadores();
                 })
                 .catch((err) => {

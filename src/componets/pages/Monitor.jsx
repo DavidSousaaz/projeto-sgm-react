@@ -60,7 +60,7 @@ export default function Monitor() {
         }
     };
 
-    // Função auxiliar para criar um "badge" de status colorido
+
     const renderStatusBadge = (status) => {
         const styleMap = {
             PENDENTE: 'bg-yellow-100 text-yellow-800',
@@ -126,7 +126,7 @@ export default function Monitor() {
                                         Registrado em: {new Date(ativ.dataHora).toLocaleString('pt-BR')}
                                     </p>
                                 </div>
-                                {/* ** A MUDANÇA É AQUI: Exibindo o status ** */}
+                                {}
                                 {renderStatusBadge(ativ.status)}
                             </li>
                         ))}

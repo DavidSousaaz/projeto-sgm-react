@@ -4,7 +4,7 @@ import api from "../services/api";
 import MonitorCard from "../monitoria/MonitorCard";
 
 export default function EditalDetalhes() {
-    const { id } = useParams(); // Pega o ID do edital da URL (ex: /editais/1)
+    const { id } = useParams();
     const [processo, setProcesso] = useState(null);
     const [monitorias, setMonitorias] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -13,11 +13,11 @@ export default function EditalDetalhes() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Faz duas chamadas à API em paralelo para buscar os dados
+
                 const [processoResponse, monitoriasResponse] = await Promise.all([
-                    // Busca os detalhes do processo seletivo (edital)
+
                     api.get(`/processos-seletivos/${id}`),
-                    // Busca as monitorias filtrando por este processo seletivo
+
                     api.get(`/monitorias?processoId=${id}`)
                 ]);
 
@@ -33,7 +33,7 @@ export default function EditalDetalhes() {
         };
 
         fetchData();
-    }, [id]); // O 'id' no array de dependências garante que a busca é refeita se o ID na URL mudar
+    }, [id]);
 
     const formatDate = (dateString) => {
         if (!dateString) return 'Data não definida';
@@ -66,7 +66,7 @@ export default function EditalDetalhes() {
             <div className="flex flex-col items-center pb-[10px] w-full">
                 {monitorias.length > 0 ? (
                     monitorias.map(monitoria => (
-                        // Reutilizamos o MonitorCard, que já tem a lógica de inscrição!
+
                         <MonitorCard key={monitoria.id} monitoria={monitoria} />
                     ))
                 ) : (

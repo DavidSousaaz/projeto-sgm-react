@@ -5,27 +5,27 @@ import Button from "../form/Button";
 import Campo from "../form/Campo";
 
 export default function EditarInstituicao() {
-  // Hooks do React Router para navegação e para pegar o ID da URL
+
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Estado para os dados do formulário
+
   const [formData, setFormData] = useState({
     nome: "",
     cnpj: "",
     email: "",
   });
 
-  // Estados para controle de UI
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // useEffect para buscar os dados da instituição a ser editada
+
   useEffect(() => {
     setLoading(true);
     api.get(`/instituicoes/${id}`)
         .then((response) => {
-          // Popula o formulário com os dados recebidos da API
+
           setFormData({
             nome: response.data.nome,
             cnpj: response.data.cnpj,
@@ -39,7 +39,7 @@ export default function EditarInstituicao() {
         .finally(() => {
           setLoading(false);
         });
-  }, [id]); // Executa sempre que o ID na URL mudar
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +52,7 @@ export default function EditarInstituicao() {
 
     try {
       await api.put(`/instituicoes/${id}`, formData);
-      navigate("/instituicoes"); // Volta para a lista após salvar
+      navigate("/instituicoes");
     } catch (err) {
       console.error("Erro ao atualizar instituição:", err);
       const errorMsg = err.response?.data?.message || "Erro ao salvar as alterações.";
@@ -95,7 +95,7 @@ export default function EditarInstituicao() {
               required
           />
 
-          {/* Os selects de Cursos e Processos foram removidos pois não fazem parte do DTO */}
+          {}
 
           <div className="flex justify-center gap-2 mt-4">
             <Button

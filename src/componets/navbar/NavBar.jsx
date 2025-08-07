@@ -5,7 +5,7 @@ import ScrollContainer from "./ScrollContainer";
 function NavBar() {
   const { profile, user, isMonitor } = useAuth();
 
-  // Objeto que define os links para cada perfil
+
   const navLinksPorPerfil = {
     monitor: [
       { to: "/monitor", label: "Monitoria" }
@@ -31,7 +31,7 @@ function NavBar() {
     ]
   };
 
-  // Função que renderiza os itens de navegação a partir de um array
+
   const renderNavItems = (items) => {
     return items.map(item => <NavItem key={item.to} to={item.to} label={item.label} />);
   };
@@ -43,13 +43,13 @@ function NavBar() {
               {user && <NavItem to={`/perfil/${user.id}`} label="Meu Perfil" />}
               {user && <div className="border-l border-gray-400 h-6 self-center mx-2"></div>}
 
-              {/* 2. LÓGICA DE RENDERIZAÇÃO ATUALIZADA */}
-              {/* Se o usuário for um monitor, mostra o link de Monitoria */}
+              {}
+              {}
               {isMonitor && (
                   <NavItem to="/monitor" label="Minha Monitoria" />
               )}
 
-              {/* Renderiza os links normais do perfil principal dele */}
+              {}
               {navLinksPorPerfil[profile] && renderNavItems(navLinksPorPerfil[profile])}
             </ScrollContainer>
         )}

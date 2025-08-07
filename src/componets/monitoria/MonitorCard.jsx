@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Button from "../form/Button";
-import Modal from "../form/Modal"; // 1. Importando nosso novo componente Modal
+import Modal from "../form/Modal";
 
 export default function MonitorCard({ monitoria }) {
     const navigate = useNavigate();
 
-    // 2. Estados para controlar o modal e a escolha do tipo de vaga
+
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [tipoVaga, setTipoVaga] = useState("VOLUNTARIA"); // Valor padrão
+    const [tipoVaga, setTipoVaga] = useState("VOLUNTARIA");
     const [error, setError] = useState(null);
 
     const handleOpenModal = () => {
@@ -17,10 +17,10 @@ export default function MonitorCard({ monitoria }) {
         setIsModalOpen(true);
     };
 
-    // 3. Função que é chamada ao confirmar a inscrição no modal
+
     const handleInscricao = async () => {
         try {
-            // 4. Chamada para o nosso novo endpoint no back-end
+
             await api.post(`/monitorias/${monitoria.id}/inscricoes`, { tipoVaga });
             alert("Inscrição realizada com sucesso!");
             setIsModalOpen(false);
@@ -39,28 +39,28 @@ export default function MonitorCard({ monitoria }) {
                 <p>Vagas Totais: {monitoria.numeroVaga}</p>
                 <p>Vagas com Bolsa: {monitoria.numeroVagaBolsa}</p>
                 <div className="flex justify-end">
-                    {/* O botão de visualizar continua, mas podemos adicionar um novo para inscrição */}
+                    {}
                     <Button onClick={() => navigate(`/monitorias/${monitoria.id}`)}>
                         Visualizar
                     </Button>
-                    {/* 5. Botão que abre o modal */}
+                    {}
                     <Button onClick={handleOpenModal}>
                         Inscrever-se
                     </Button>
                 </div>
             </div>
 
-            {/* 6. Nosso componente Modal, que só aparece quando isModalOpen é true */}
+            {}
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onConfirm={handleInscricao}
                 title={`Inscrição em ${monitoria.disciplinaResponseDTO.nome}`}
             >
-                {/* Este é o conteúdo que aparece dentro do Modal */}
+                {}
                 <p className="mb-4">Selecione o tipo de vaga que você deseja concorrer:</p>
 
-                {/* Opções de escolha */}
+                {}
                 <div className="space-y-2">
                     <label className="flex items-center">
                         <input
@@ -81,7 +81,7 @@ export default function MonitorCard({ monitoria }) {
                             checked={tipoVaga === "BOLSA"}
                             onChange={(e) => setTipoVaga(e.target.value)}
                             className="mr-2"
-                            disabled={monitoria.numeroVagaBolsa === 0} // Desabilita se não houver vagas com bolsa
+                            disabled={monitoria.numeroVagaBolsa === 0}
                         />
                         Vaga com Bolsa {monitoria.numeroVagaBolsa === 0 && "(Indisponível)"}
                     </label>

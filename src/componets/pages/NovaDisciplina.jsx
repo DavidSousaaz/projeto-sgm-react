@@ -7,14 +7,14 @@ import Campo from "../form/Campo";
 export default function NovaDisciplina() {
   const navigate = useNavigate();
 
-  // 1. Estado inicial do formulário agora é mais simples
+
   const [formData, setFormData] = useState({
     nome: '',
     cargaHoraria: '',
     cursoId: ''
   });
 
-  // 2. Só precisamos carregar a lista de cursos
+
   const [cursos, setCursos] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -73,7 +73,7 @@ export default function NovaDisciplina() {
               required
           />
 
-          {/* 3. O dropdown de Professor foi removido */}
+          {}
           <div className="mb-4">
             <label className="block mb-1 text-gray-600">Curso</label>
             <select

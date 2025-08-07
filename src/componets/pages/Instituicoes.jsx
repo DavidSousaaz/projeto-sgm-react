@@ -24,9 +24,8 @@ export default function Instituicoes() {
         });
   }, []);
 
-  // A função de deletar não é mais necessária aqui
-  /* function deletarInstituicao(id) { ... }
-  */
+
+
 
   if (loading) return <p className="text-center mt-8">Carregando instituições...</p>;
   if (error) return <p className="text-red-500 text-center mt-8">{error}</p>;

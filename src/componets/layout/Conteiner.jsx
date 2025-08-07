@@ -1,8 +1,8 @@
-// CORREÇÃO: Os caminhos agora partem de 'src/componets/layout/'
+
 import NavBar from "../navbar/NavBar";
 import NavItem from "../navbar/NavItem";
 import { FiLogOut } from 'react-icons/fi';
-import { useAuth } from "../AuthContext"; // Volta um nível para a pasta 'componets'
+import { useAuth } from "../AuthContext";
 import { Link } from "react-router-dom";
 
 function Conteiner({ children }) {

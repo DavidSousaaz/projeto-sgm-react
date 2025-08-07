@@ -16,7 +16,7 @@ export default function NovaMonitoria() {
         cargaHoraria: 4,
     });
 
-    // Estados para popular os dropdowns
+
     const [disciplinas, setDisciplinas] = useState([]);
     const [professores, setProfessores] = useState([]);
     const [processosSeletivos, setProcessosSeletivos] = useState([]);
@@ -24,7 +24,7 @@ export default function NovaMonitoria() {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Busca todos os dados necessários para os dropdowns
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -58,7 +58,7 @@ export default function NovaMonitoria() {
         try {
             await api.post("/monitorias", formData);
             alert("Monitoria criada com sucesso!");
-            navigate("/coordenador"); // Volta para o dashboard
+            navigate("/coordenador");
         } catch (err) {
             console.error("Erro ao criar monitoria:", err);
             setError(err.response?.data?.message || "Erro ao salvar a monitoria.");

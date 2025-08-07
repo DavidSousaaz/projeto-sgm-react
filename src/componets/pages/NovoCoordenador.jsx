@@ -12,7 +12,7 @@ export default function NovoCoordenador() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Busca professores e cursos para preencher os dropdowns
+
         const fetchData = async () => {
             try {
                 const [profResponse, cursosResponse] = await Promise.all([
@@ -39,7 +39,7 @@ export default function NovoCoordenador() {
         e.preventDefault();
         setError(null);
 
-        // Para tornar um professor coordenador, atualizamos seu registro com o ID do curso
+
         const dadosParaEnviar = { cursosId: [formData.cursoId] };
 
         api.put(`/professores/${formData.professorId}`, dadosParaEnviar)

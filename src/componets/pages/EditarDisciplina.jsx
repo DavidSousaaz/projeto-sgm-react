@@ -5,23 +5,23 @@ import Button from "../form/Button";
 import Campo from "../form/Campo";
 
 export default function EditarDisciplina() {
-  const { id } = useParams(); // Pega o ID da disciplina da URL
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  // 1. Estado do formulário inicializado corretamente
+
   const [formData, setFormData] = useState({
     nome: "",
     cargaHoraria: "",
     cursoId: "",
   });
 
-  // 2. Só precisamos da lista de cursos para o dropdown
+
   const [cursos, setCursos] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 3. Busca os dados da disciplina específica E a lista de todos os cursos
+
     const fetchDados = async () => {
       try {
         const [disciplinaResponse, cursosResponse] = await Promise.all([
@@ -29,7 +29,7 @@ export default function EditarDisciplina() {
           api.get("/cursos"),
         ]);
 
-        // 4. Popula o formulário com os dados da disciplina que está sendo editada
+
         const disciplina = disciplinaResponse.data;
         setFormData({
           nome: disciplina.nome,
@@ -47,7 +47,7 @@ export default function EditarDisciplina() {
     };
 
     fetchDados();
-  }, [id]); // Executa sempre que o ID mudar
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,7 +95,7 @@ export default function EditarDisciplina() {
               required
           />
 
-          {/* 5. Dropdown de Professor foi removido */}
+          {}
           <div className="mb-4">
             <label className="block mb-1 text-gray-600">Curso</label>
             <select
