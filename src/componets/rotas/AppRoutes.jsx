@@ -27,6 +27,7 @@ import NovaInstituicao from "../pages/NovaInstituicao";
 import EditarInstituicao from "../pages/EditarInstituicao";
 import Monitor from "../pages/Monitor";
 import Monitorias from "../pages/Monitorias";
+import NovaMonitoria from "../pages/NovaMonitoria";
 import MonitoriaDetalhes from "../pages/MonitoriaDetalhes";
 import Perfil from "../pages/Perfil";
 import Professor from "../pages/Professor";
@@ -58,6 +59,7 @@ function AppRoutes() {
                 <Route path="/editais/:id" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno", "monitor"]}><EditalDetalhes /></RotaProtegida>} />
                 <Route path="/monitorias" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno", "monitor"]}><Monitorias /></RotaProtegida>} />
                 <Route path="/monitorias/:id" element={<RotaProtegida perfilPermitido={["admin", "coordenador", "professor", "aluno", "monitor"]}><MonitoriaDetalhes /></RotaProtegida>} />
+                <Route path="/monitorias/nova" element={<RotaProtegida perfilPermitido={["coordenador", "admin"]}><NovaMonitoria /></RotaProtegida>} />
 
                 {/* Gerenciamento (Coordenador / Admin) */}
                 <Route path="/alunos" element={<RotaProtegida perfilPermitido={["coordenador", "admin"]}><Alunos /></RotaProtegida>} />

@@ -1,30 +1,29 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-// 1. Importando nosso serviço de API centralizado
 import api from './services/api';
 
 export const AuthContext = createContext();
 
-// Função auxiliar para mapear as roles do back-end para os perfis do front-end
 const mapRoleToProfile = (roles) => {
-  // Pega a primeira role da lista, que geralmente é a principal
-  const primaryRole = roles && roles.length > 0 ? roles[0].role : null;
-  if (!primaryRole) return null;
+  if (!roles || roles.length === 0) return null;
+  const profilePriority = ["admin", "coordenador", "professor", "aluno"];
+  const userProfiles = roles.map(role => {
+    switch (role.role) {
+      case "ROLE_ADMIN": return "admin";
+      case "ROLE_COORDENADOR": return "coordenador";
+      case "ROLE_DOCENTE": return "professor";
+      case "ROLE_DISCENTE": return "aluno";
+      default: return null;
+    }
+  }).filter(Boolean);
 
-  switch (primaryRole) {
-    case "ROLE_ADMIN":
-      return "admin";
-    case "ROLE_DOCENTE":
-      return "professor";
-    case "ROLE_DISCENTE":
-      return "aluno";
-    case "ROLE_COORDENADOR":
-      return "coordenador";
-      // TODO: Adicionar um caso para ROLE_MONITOR quando essa role for implementada no back-end
-    default:
-      return primaryRole.replace('ROLE_', '').toLowerCase();
+  for (const profile of profilePriority) {
+    if (userProfiles.includes(profile)) {
+      return profile;
+    }
   }
+  return null;
 };
 
 export const AuthProvider = ({ children }) => {
@@ -32,58 +31,74 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [isMonitor, setIsMonitor] = useState(false); // Novo estado
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  useEffect(() => {
-    // Tenta carregar os dados do usuário do localStorage ao iniciar a aplicação
-    const storedToken = localStorage.getItem("jwt_token");
-    const storedUser = localStorage.getItem("user");
-
-    if (storedToken && storedUser) {
-      try {
-        const decoded = jwtDecode(storedToken);
-
-        // Se o token expirou, limpa tudo
-        if (decoded.exp * 1000 < Date.now()) {
-          localStorage.clear();
-          setLoading(false);
-          return;
-        }
-
-        const parsedUser = JSON.parse(storedUser);
-        // 2. Padronizando a chave do token
-        setToken(storedToken);
-        setUser(parsedUser);
-        setProfile(mapRoleToProfile(parsedUser.roles));
-
-      } catch (error) {
-        console.error("Erro ao processar token armazenado:", error);
-        localStorage.clear();
-      }
+  // Nova função para verificar se o aluno é um monitor ativo
+  const verificarStatusMonitor = async () => {
+    try {
+      const inscricoesResponse = await api.get(`/alunos/me/inscricoes`);
+      const inscricaoAtiva = inscricoesResponse.data.find(insc => insc.selecionado);
+      setIsMonitor(!!inscricaoAtiva); // Converte para booleano (true se encontrou, false se não)
+    } catch (error) {
+      console.error("Não foi possível verificar o status de monitor.", error);
+      setIsMonitor(false); // Garante que o padrão é 'false' em caso de erro
     }
-    setLoading(false);
+  };
+
+  useEffect(() => {
+    const bootstrapAuth = async () => {
+      setLoading(true);
+      const storedToken = localStorage.getItem("jwt_token");
+      const storedUser = localStorage.getItem("user");
+
+      if (storedToken && storedUser) {
+        try {
+          const decoded = jwtDecode(storedToken);
+          if (decoded.exp * 1000 < Date.now()) {
+            localStorage.clear();
+          } else {
+            const parsedUser = JSON.parse(storedUser);
+            setToken(storedToken);
+            setUser(parsedUser);
+            const userProfile = mapRoleToProfile(parsedUser.roles);
+            setProfile(userProfile);
+
+            // Se o usuário carregado for um aluno, verifica seu status de monitor
+            if (userProfile === 'aluno') {
+              await verificarStatusMonitor();
+            }
+          }
+        } catch (error) {
+          console.error("Erro ao processar token armazenado:", error);
+          localStorage.clear();
+        }
+      }
+      setLoading(false);
+    };
+    bootstrapAuth();
   }, []);
 
   const login = async (matricula, password) => {
     setAuthError(null);
     try {
-      // 3. Usando nosso 'api.js' para a chamada de login
       const response = await api.post("/auth/login", { matricula, password });
-
       const { token: newToken, user: userData } = response.data;
 
-      // Salva no localStorage
       localStorage.setItem("jwt_token", newToken);
       localStorage.setItem("user", JSON.stringify(userData));
 
-      // Atualiza o estado global
       setToken(newToken);
       setUser(userData);
       const userProfile = mapRoleToProfile(userData.roles);
       setProfile(userProfile);
 
-      // Lógica de redirecionamento após o login
+      // Após o login, se for aluno, verifica o status de monitor
+      if (userProfile === 'aluno') {
+        await verificarStatusMonitor();
+      }
+
       const rotasPorPerfil = {
         aluno: "/editais",
         professor: "/professor",
@@ -104,19 +119,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    // 4. Notifica o back-end sobre o logout (boa prática)
     api.post('/auth/logout').catch(err => console.error("Erro no logout da API:", err));
-
-    // Limpa o localStorage
     localStorage.removeItem("jwt_token");
     localStorage.removeItem("user");
-
-    // Reseta o estado global
     setToken(null);
     setUser(null);
     setProfile(null);
-
-    // Redireciona para a página de login
+    setIsMonitor(false); // Limpa o status de monitor no logout
     navigate("/");
   };
 
@@ -124,6 +133,7 @@ export const AuthProvider = ({ children }) => {
     token,
     user,
     profile,
+    isMonitor, // Expondo o novo estado para a aplicação
     isAuthenticated: !!token,
     loading,
     authError,
